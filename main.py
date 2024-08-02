@@ -10,49 +10,54 @@ logo = '''
 import os
 import random
 
-def difficulty_selection(difficulty):
-    
-    nums = list(range(1, 101)) # randint(1,100) alternatively
-    random_num = random.choice(nums)
-    print(f"Number is {random_num}")
-    
-    if difficulty == 'beginner':
-        attempts = 10
-    elif difficulty == 'advanced':
-        attempts = 5
-        
-    while attempts > 0:
-        guess = int(input("Make a guess: "))
-        attempts -= 1
-            
-        if guess == random_num:
-            print("You got the right number! Congrats!")
-            restart = input("Play again? Type 'yes' or 'no': " )
-            if restart == 'yes':
-                os.system("cls" if os.name == "nt" else "clear")
-                difficulty_selection(difficulty)
-            elif restart == 'no': 
-                return
-            
-        elif guess < random_num:
-            print("Too low.")
-            print("Guess again.")
-        else:
-            print("Too high.")
-            print("Guess again.")
-            
-        if attempts == 0:
-            print(f"You ran out of turns. The number is {random_num}.")
-        else:
-            print(f"You have {attempts} attempts remaining.")
-            
-# while input("Do you want to play a game of Blackjack? Type 'yes' or 'no': " ) == 'yes':
-#     os.system("cls" if os.name == "nt" else "clear")
-#     difficulty_selection()
+NORMAL_DIFFICULTY = 10
+HARD_DIFFICULTY = 5
 
-print("")
-print("Welcome to Guess the Number game!")
-print("We pick a number for you to guess. What's your difficulty?")
-difficulty = input("Choose between 'beginner' and 'advanced': ")
+def select_difficulty():
+    difficulty = input("Select your difficulty: Type 'normal' or 'hard': ")
+    if difficulty == 'normal':
+        return NORMAL_DIFFICULTY
+    elif difficulty == 'hard':
+        return HARD_DIFFICULTY
 
-difficulty_selection(difficulty)
+def make_guess(guess, num, turns):
+    if guess > num:
+        print("Too high.")
+        return turns - 1
+    elif guess < num:
+        print("Too low.")
+        return turns - 1
+    else:
+        print(f"You got it! The right number is {num}.")
+        restart()
+    
+def restart():
+    restart = input("Play again? Type 'yes' or 'no': " )
+    if restart == 'yes':
+        os.system("cls" if os.name == "nt" else "clear")
+        start_game()
+    else: 
+        return
+
+def start_game():
+    print("Welcome to Guess the Number game!")
+    print("The number will be picked at random and you have several turns to guess it.")
+    print("Hint: The number is between 1 and 100.")
+    num = random.randint(1, 100)
+    print(num)
+    
+    turns = select_difficulty()
+    guess = 0
+    while guess != num:
+        print(f"You now have {turns} remaining attempts to guess the number.")
+        guess = int(input("Guess the number: "))
+        turns = make_guess(guess, num, turns)
+        if turns == 0:
+            print("You ran out of turns. Game over.")
+            return
+        elif guess != num:
+            print("Guess again.")
+
+start_game()
+
+
